@@ -3,10 +3,16 @@
 #include "Grafo.h"
 #include "functions.h"
 
-int main() {
+int main(int argc, char* argv[]) {
+    if (argc < 2) {
+        std::cerr << "Erro: Faltou passar o nome do arquivo no terminal!" << std::endl;
+        return 1;
+    }
     structures::Grafo<int> meuGrafo;
+
     
-    std::ifstream arquivo("grafo_teste.txt");
+    std::ifstream arquivo(argv[1]);
+    
     if (arquivo.is_open()) {
         meuGrafo.ler(arquivo);
         arquivo.close();

@@ -1,0 +1,12 @@
+*vertices 5
+1 Acordar cedo
+2 Tomar banho
+3 Preparar o cafe
+4 Vestir a roupa
+5 Sair de casa
+*arcs
+1 2 1
+1 3 1
+2 4 1
+3 4 1
+4 5 1
