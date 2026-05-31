@@ -1,3 +1,4 @@
+#ifndef FUNCTIONS_H
 #define FUNCTIONS_H
 
 #include <iostream>
@@ -21,6 +22,13 @@ structures::Grafo<T> transporGrafo(const structures::Grafo<T>& G);
 // Função Principal de Kosaraju
 template<typename T>
 std::vector<std::vector<T>> AcharCFC(const structures::Grafo<T>& G);
+
+template<typename T>
+void VisitaOT(const structures::Grafo<T>& G, const T& u, std::map<T, bool>& conhecido, std::map<T, int>& tempo_conhecido, std::map<T, int>& tempo_finalizado, int& tempo, std::vector<T>& ordem, bool& tem_ciclo);
+
+// Função de Ordenacao topológica
+template<typename T>
+std::vector<T> OrdenacaoTopologica(const structures::Grafo<T>& G);
 
 
 template<typename T>
@@ -117,3 +125,71 @@ std::vector<std::vector<T>> AcharCFC(const structures::Grafo<T>& G) {
 
     return componentes_fortemente_conexos;
 }
+
+// Função de Ordenacao topológica
+template<typename T>
+std::vector<T> OrdenacaoTopologica(const structures::Grafo<T>& G) {
+    std::map<T, bool> conhecido;
+    std::map<T, int> tempo_conhecido;
+    std::map<T, int> tempo_finalizado;
+    std::vector<T> ordem;
+    bool tem_ciclo = false;
+
+    for (const auto& par : G.vertices){
+        conhecido[par.first] = false;
+        tempo_conhecido[par.first] = 10000000;
+        tempo_finalizado[par.first] = 10000000;
+    }
+
+    int tempo = 0;
+    for (const auto& par : G.vertices) {
+        T u = par.first;
+        if (!conhecido.at(u) && !tem_ciclo) {
+            VisitaOT(G, u, conhecido, tempo_conhecido, tempo_finalizado, tempo, ordem, tem_ciclo);
+        }
+    }
+
+    // reverte pq usei push_back em VisitaOT
+    if (!tem_ciclo) {
+        std::reverse(ordem.begin(), ordem.end());
+    }
+
+    return ordem;
+}
+
+template<typename T>
+void VisitaOT(const structures::Grafo<T>& G, const T& v, std::map<T, bool>& conhecido, std::map<T, int>& tempo_conhecido, std::map<T, int>& tempo_finalizado, int& tempo, std::vector<T>& ordem, bool& tem_ciclo) {
+    if (tem_ciclo) return;
+
+    conhecido.at(v) = true;
+    tempo += 1;
+    tempo_conhecido.at(v) = tempo;
+
+    std::list<T> lista_vizinhos = G.vizinhos(v);
+
+    for (const T& u : lista_vizinhos) {
+        // se um vertice for conhecido e dps for encontrado novamente sem ser finalizado, existe ciclo
+        if (tempo_conhecido.at(u) != 10000000 && tempo_finalizado.at(u) == 10000000) {
+            tem_ciclo = true;
+            ordem.clear();
+            return;
+        }
+        
+        if (tempo_conhecido.at(u) != 10000000 && tempo_finalizado.at(u) == 10000000) {
+            tem_ciclo = true;
+            ordem.clear();
+            return;
+        }
+        if (!conhecido.at(u)) {
+            VisitaOT(G, u, conhecido, tempo_conhecido, tempo_finalizado, tempo, ordem, tem_ciclo);
+        }
+    }
+
+    if (tem_ciclo) return;
+
+    tempo += 1;
+    tempo_finalizado.at(v) = tempo;
+
+    ordem.push_back(v);
+}
+#endif

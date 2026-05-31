@@ -33,7 +33,7 @@ namespace structures {
             int grau(const T& v) const;
 
             //retorna o rótulo do vértice v
-            int rotulo(const T& index) const;
+            std::string rotulo(const T& index) const;
 
             //retorna os vizinhos do vértice v
             std::list<T> vizinhos(const T& index) const;
@@ -49,7 +49,7 @@ namespace structures {
         
         public:
             struct Vertice {
-                T rotulo; //rotulo do vertice
+                std::string rotulo; //rotulo do vertice
                 std::list<std::pair<T, int>> vizinhos; // lista com pares <id do vizinho, peso da aresta>
             };
             
@@ -80,7 +80,7 @@ namespace structures {
     }
 
     template<typename T>
-    int structures::Grafo<T>::rotulo(const T& index) const{
+    std::string structures::Grafo<T>::rotulo(const T& index) const{
         return vertices.at(index).rotulo;
     }
 
@@ -144,11 +144,13 @@ namespace structures {
                     // Lê o índice do vértice
                     ss_vertice >> id; 
                     
+                    // Lê rótulo do vértice
+                    std::string nome_rotulo;
+                    std::getline(ss_vertice >> std::ws, nome_rotulo);
+                    
                     // Inicializa a lista do vértice no map
                     vertices[id] = {};
-
-                    // Se a sua estrutura suportar ler o rótulo, você pode descomentar a linha abaixo:
-                    // ss_vertice >> vertices[id].rotulo;
+                    vertices[id].rotulo = nome_rotulo;
                 }
             } 
             else if (linha.find("*edges") != std::string::npos) {
